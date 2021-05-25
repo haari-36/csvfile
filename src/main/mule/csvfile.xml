@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<file:config name="File_Config" doc:name="File Config" doc:id="91fbaea8-a528-455f-bc9e-75329bb8b517" >
+		<file:connection workingDir="D:\file" />
+	</file:config>
+	<flow name="csvfileFlow" doc:id="f7a03c75-2d22-489e-82e4-6f29ad3bae95" >
+		<file:listener doc:id="475b96cc-f43e-463c-9b02-eae4fa13a257" directory="D:\file" moveToDirectory="D:\file\exit" config-ref="File_Config">
+			<scheduling-strategy >
+				<fixed-frequency frequency="5" timeUnit="MINUTES"/>
+			</scheduling-strategy>
+			<file:matcher filenamePattern="*.CSV" />
+		</file:listener>
+		<logger level="INFO" doc:name="Logger" doc:id="5c6b6394-dd52-4539-9684-df0b26af8f58" message="#[payload]"/>
+		<ee:transform doc:name="Transform Message" doc:id="8d004962-e2ee-4c3b-adcf-a5cdf1e9bc2e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="2acd5fef-404c-4cf0-9624-cc5f5927dd92" message="#[payload]"/>
+	</flow>
+</mule>
